@@ -17,7 +17,7 @@ public class PostgreSQL {
         try {
             c = DriverManager
                     .getConnection("jdbc:postgresql://localhost:5432/ico",
-                            "postgres", "acfe0b3751");
+                            "postgres", "");
         } catch (SQLException e) {
             e.printStackTrace();
         }
