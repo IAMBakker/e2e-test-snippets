@@ -1,15 +1,16 @@
 package test;
 
 import dataobjects.TestItem;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import postgres.PostgreSQL;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class FirstTest {
 
     protected WebDriver driver;
 
-    @BeforeEach
+    @Before
     public void setUp(){
         System.setProperty("webdriver.chrome.driver", "/home/ico/Programs/WebDrivers/chromedriver");
 
@@ -28,7 +29,7 @@ public class FirstTest {
         driver.manage().window().maximize();
     }
 
-    @AfterEach
+    @After
     public void tearDown(){
         driver.close();
     }
@@ -83,22 +84,21 @@ public class FirstTest {
 
 //        create database connection
         PostgreSQL dbConnection = new PostgreSQL();
-        Statement database = dbConnection.getConnection().createStatement();
+        PreparedStatement statement = dbConnection.getConnection()
+                .prepareStatement("INSERT INTO TESTITEM (ID,SEARCHTERM,TESTCLASS,TEXT,URL,DATE_CREATED)" +
+                        "VALUES (?,?,?,?,?,?)");
         dbConnection.getConnection().setAutoCommit(false);
 
         for(TestItem i : items){
-
-            String sql = "INSERT INTO TESTITEM (ID,SEARCHTERM,TESTCLASS,TEXT,URL) ";
-            sql += "VALUES ("
-                    + i.getKey() + ", "
-                    + wrapString(i.getSearchTerm()) + ", "
-                    + wrapString(i.getTestClass()) + ", "
-                    + wrapString(i.getText()) + ", "
-                    + wrapString(i.getUrl()) + " );";
-            System.out.println(sql);
-            database.executeUpdate(sql);
+            statement.setObject(1, i.getKey());
+            statement.setObject(2, wrapString(i.getSearchTerm()));
+            statement.setObject(3, wrapString(i.getTestClass()));
+            statement.setObject(4, wrapString(i.getText()));
+            statement.setObject(5, wrapString(i.getUrl()));
+            statement.setObject(6, java.sql.Date.valueOf(LocalDate.now()));
+            statement.executeUpdate();
         }
-        database.close();
+        statement.close();
 
         dbConnection.getConnection().commit();
         dbConnection.getConnection().close();

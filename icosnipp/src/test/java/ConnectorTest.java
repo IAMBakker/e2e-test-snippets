@@ -29,7 +29,8 @@ public class ConnectorTest {
                 " SEARCHTERM     VARCHAR(255)    NOT NULL, " +
                 " TESTCLASS      VARCHAR(255)    NOT NULL, " +
                 " TEXT           TEXT, " +
-                " URL            TEXT)";
+                " URL            TEXT, " +
+                " DATE_CREATED   DATE            NOT NULL)";
         database.executeUpdate(sql);
         database.close();
         dbConnection.getConnection().close();
